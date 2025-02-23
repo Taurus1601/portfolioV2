@@ -1,8 +1,9 @@
 "use client"
-import React, { useState ,useRef} from 'react'
+import React, { useState, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { useSpring, animated } from '@react-spring/three'
+import { useSprings, animated } from '@react-spring/three'
 import { OrbitControls } from '@react-three/drei'
+import Image from 'next/image'
 import RoundedPlane from './plane'
 import './carousel.css'
 
@@ -21,65 +22,53 @@ function Carousel() {
     { position: [0, 0, -5], image: 'images/6.jpeg' },
     { position: [0, 0, -6], image: 'images/7.jpeg' },
     { position: [0, 0, -7], image: 'images/8.jpeg' },
-    { position: [0, 0, -4], image: 'images/5.jpeg' },
-    { position: [0, 0, -5], image: 'images/6.jpeg' },
-    { position: [0, 0, -6], image: 'images/7.jpeg' },
-    { position: [0, 0, -7], image: 'images/8.jpeg' },
-    { position: [0, 0, -4], image: 'images/5.jpeg' },
-    { position: [0, 0, -5], image: 'images/6.jpeg' },
-    { position: [0, 0, -6], image: 'images/7.jpeg' },
-    { position: [0, 0, -7], image: 'images/8.jpeg' },
   ]
 
-
-  // ... existing planes array ...
-
-    const calculatePosition = (index, activeIndex, totalPlanes) => {
-    const distance = 2.3 // Increased distance between planes
-    const spacing = 0.6 // Constant vertical spacing
+  const calculatePosition = (index, activeIndex, totalPlanes) => {
+    const distance = 2.3
+    const spacing = 0.6
     
-    // Calculate relative position in the stack
     let relativePosition = ((index - activeIndex + totalPlanes) % totalPlanes)
-    
-    // Keep planes in a more controlled range
     if (relativePosition > totalPlanes / 2) {
       relativePosition -= totalPlanes
     }
     
-    // Calculate positions
-    const zPosition = -relativePosition * distance *spacing
-    // const yPosition = -relativePosition * spacing // Consistent downward stacking
-    
-    return [0,0, zPosition]
+    const zPosition = -relativePosition * distance * spacing
+    return [0, 0, zPosition]
   }
 
+  // Use useSprings instead of multiple useSpring calls
+  const [springs] = useSprings(planes.length, (index) => ({
+    position: calculatePosition(index, activeIndex, planes.length),
+    opacity: 1,
+    config: {
+      mass: 1,
+      tension: 280,
+      friction: 40,
+    },
+    to: async (next) => {
+      const isSelected = selectedImage === planes[index].image
+      await next({
+        position: isSelected ? [0, 3, 0] : calculatePosition(index, activeIndex, planes.length),
+        opacity: isSelected ? 0 : 1,
+        delay: isSelected ? 100 : 0,
+      })
+    },
+  }), [activeIndex, selectedImage])
+
   const handleNext = () => {
-    setActiveIndex((prevIndex) => {
-      const nextIndex = (prevIndex +1) % planes.length
-      return nextIndex
-    })
+    setActiveIndex((prevIndex) => (prevIndex + 1) % planes.length)
   }
 
   const handlePrev = () => {
-    setActiveIndex((prevIndex) => {
-      const nextIndex = (prevIndex - 1 + planes.length) % planes.length
-      return nextIndex
-    })
+    setActiveIndex((prevIndex) => (prevIndex - 1 + planes.length) % planes.length)
   }
 
-
-
-   const handleImageClick = (image) => {
-    // First set the selected image for animation
+  const handleImageClick = (image) => {
     setSelectedImage(image)
-    
-    // Delay the overlay display by 500ms
-    setTimeout(() => {
-      if (imageRef.current && overlayRef.current) {
-        imageRef.current.src = image
-        overlayRef.current.style.display = 'block'
-      }
-    }, 500)
+    if (overlayRef.current) {
+      overlayRef.current.style.display = 'block'
+    }
   }
 
   const handleClose = () => {
@@ -91,51 +80,35 @@ function Carousel() {
 
   return (
     <div className="container h-[100vh] w-[100vw] rounded-lg">
-  <Canvas 
-  className="canvas" 
-  enableZoom={true}
-  camera={{ 
-    position: [8, 4, 8], // Adjusted camera position for better view
-    fov: 50, // Narrower field of view
-    near: 0.1,
-    far: 1000
-  }}
->
-  <ambientLight intensity={2} />
-  <pointLight position={[10, 10, 10]} />
-  <OrbitControls 
-    enableZoom={false} // Disable zoom for better control
-    minPolarAngle={Math.PI / 3} // Limit vertical rotation
-    maxPolarAngle={Math.PI / 2}
-  />
-        {planes.map((plane, index) => {
-          const isSelected = selectedImage === plane.image
-          const { position, opacity } = useSpring({
-            position: isSelected 
-              ? [0, 3, 0] 
-              : calculatePosition(index, activeIndex, planes.length),
-            opacity: isSelected ? 0 : 1,
-            config: {
-              mass: 1,
-              tension: 280,
-              friction: 40,
-            },
-            delay: isSelected ? 100 : 0,
-          })
-          
-          return (
-            <animated.mesh 
-              key={index} 
-              position={position}
-              onClick={() => handleImageClick(plane.image)}
-              material-transparent={true}
-              material-opacity={opacity}
-            >
-              <RoundedPlane position={plane.position} image={plane.image} />
-            </animated.mesh>
-          )
-        })}
+      <Canvas 
+        className="canvas" 
+        camera={{ 
+          position: [8, 4, 8],
+          fov: 50,
+          near: 0.1,
+          far: 1000
+        }}
+      >
+        <ambientLight intensity={2} />
+        <pointLight position={[10, 10, 10]} />
+        <OrbitControls 
+          enableZoom={false}
+          minPolarAngle={Math.PI / 3}
+          maxPolarAngle={Math.PI / 2}
+        />
+        {springs.map((spring, index) => (
+          <animated.mesh 
+            key={index} 
+            position={spring.position}
+            onClick={() => handleImageClick(planes[index].image)}
+            material-transparent={true}
+            material-opacity={spring.opacity}
+          >
+            <RoundedPlane position={planes[index].position} image={planes[index].image} />
+          </animated.mesh>
+        ))}
       </Canvas>
+
       <div className="controls absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-4 z-10">
         <button 
           onClick={handlePrev}
@@ -150,21 +123,26 @@ function Carousel() {
           Next
         </button>
       </div>
+
       <div>
         <div 
           ref={overlayRef} 
-          className="fixed inset-0 w-screen p-10 h-screen flex items-center justify-center align-middle  bg-black bg-opacity-75 z-50" 
+          className="fixed inset-0 w-screen p-10 h-screen flex items-center justify-center align-middle bg-black bg-opacity-75 z-50" 
           style={{ display: 'none' }}
         >
-          <div className="relative max-w-[50vw]  max-h-[50vh]">
-            <img 
+          <div className="relative max-w-[50vw] max-h-[50vh]">
+            <Image 
               ref={imageRef} 
-              alt="Selected" 
-              className=" object-contain lg:rounded-lg lg:w-[70vw] lg:h-[70vh] "
+              src={selectedImage || ''}
+              alt="Selected Image"
+              width={1024}
+              height={768}
+              className="object-contain lg:rounded-lg lg:w-[70vw] lg:h-[70vh]"
+              priority
             />
             <button 
-              onClick={handleClose} 
-              className="absolute top-4 -right-[60%] lg:-top-4 lg:-right-4 h-10 w-10  bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
+              onClick={handleClose}
+              className="absolute top-4 -right-[60%] lg:-top-4 lg:-right-4 h-10 w-10 bg-white text-black p-2 rounded-full hover:bg-gray-200 transition-colors"
             >
               ×
             </button>

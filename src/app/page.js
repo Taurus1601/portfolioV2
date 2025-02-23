@@ -75,11 +75,10 @@ const handleAnimationComplete = () => {
 
   <div className='h-[100vh] w-[100vw] rounded-lg '>
     {/* <Iridescence/> */}
-     
-    <SplashCursor/>
-    {/* <main className='relative z-50'> */}
-    <Island/>
-    {/* </main> */}
+         <Carousel/>
+
+    {/* <SplashCursor/> */}
+    {/* <Island/> */}
     
   </div>
 )}
