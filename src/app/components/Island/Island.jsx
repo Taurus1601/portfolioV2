@@ -133,7 +133,7 @@ function DynamicIsland({ SetTerminal,currentTerminal, isExpandedData , currentEx
           stiffness: 200,
           damping: 20,
         }}
-        src="images/1.jpeg"
+        src="images/img.jpeg"
         alt="#"
       />
       <motion.button
