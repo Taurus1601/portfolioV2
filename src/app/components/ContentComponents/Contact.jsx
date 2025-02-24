@@ -21,7 +21,7 @@ function Contact() {
                 <SpotlightCard className="col-span-2 row-span-2 rounded-[30px] bg-neutral-900/90"
                 spotlightColor="rgba(10, 102, 230, 1)">
                     <motion.a
-                        href="https://www.linkedin.com/"
+                        href="https://www.linkedin.com/in/sanjan-a-p-7bb043236/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-3 text-white h-full flex flex-col items-start" // Reduced padding
@@ -37,7 +37,8 @@ function Contact() {
                 <SpotlightCard className="rounded-[30px] col-start-3 col-span-2 bg-neutral-900/90"
                 spotlightColor="rgba(110, 84, 148, 1)">
                     <motion.a
-                        href="https://github.com/"
+                        href="https://github.com/Taurus1601"
+                        
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 text-white h-full flex flex-col items-start" // Reduced padding
@@ -53,7 +54,9 @@ function Contact() {
                 <SpotlightCard className="rounded-[30px] col-start-3 bg-neutral-900/90"
                 spotlightColor="rgba(46, 230, 113, 1)">
                     <motion.a
-                        href="#"
+                        href="https://drive.google.com/file/d/14C2Uaagvqk2HnVfahVBrC7ZpeIOwWR_i/view?usp=sharing"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="p-2 text-white h-full flex flex-col items-start" // Reduced padding
                         whileHover={{ scale: 0.98 }}
                     >
@@ -68,7 +71,8 @@ function Contact() {
                 spotlightColor="rgba(52, 152, 219, 1)"
                 >
                     <motion.a
-                        href="mailto:your@email.com"
+                        href="mailto:sanjanathyady16@gmail.com"
+
                         className="p-2 text-white h-full flex flex-col items-start" // Reduced padding
                         whileHover={{ scale: 0.98 }}
                     >

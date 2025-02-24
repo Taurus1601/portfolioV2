@@ -177,7 +177,7 @@ function IslandExtraContent({ selectedCard, setSelectedCard }) {
             animate={{ opacity: 1, y: 0 }}
             className="text-white"
           >
-           <Blog/>
+           <Blog title={'Blog'}/>
           </motion.div>
         )}
         {selectedCard === "projects" && (
@@ -195,10 +195,7 @@ function IslandExtraContent({ selectedCard, setSelectedCard }) {
             animate={{ opacity: 1, y: 0 }}
             className="text-white"
           >
-            <h2 className="text-2xl font-bold mb-4">About Me</h2>
-            <p className="mb-4">
-              Full Stack Developer with passion for creating elegant solutions.
-            </p>
+            <Blog title={'Gallery'}/>
           </motion.div>
         )}
         {selectedCard === "contact" && (
